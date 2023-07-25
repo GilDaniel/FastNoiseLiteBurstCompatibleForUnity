@@ -49,12 +49,17 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using UnityEngine;
 
 // Switch between using floats or doubles for input position
 using FNLfloat = System.Single;
 //using FNLfloat = System.Double;
 
-public class FastNoiseLite
+[BurstCompile]
+public struct FastNoiseLite
 {
     private const short INLINE = 256; // MethodImplOptions.AggressiveInlining;
     private const short OPTIMISE = 512; // MethodImplOptions.AggressiveOptimization;
@@ -120,37 +125,55 @@ public class FastNoiseLite
         DefaultOpenSimplex2 
     };
 
-    private int mSeed = 1337;
-    private float mFrequency = 0.01f;
-    private NoiseType mNoiseType = NoiseType.OpenSimplex2;
-    private RotationType3D mRotationType3D = RotationType3D.None;
-    private TransformType3D mTransformType3D = TransformType3D.DefaultOpenSimplex2;
-
-    private FractalType mFractalType = FractalType.None;
-    private int mOctaves = 3;
-    private float mLacunarity = 2.0f;
-    private float mGain = 0.5f;
-    private float mWeightedStrength = 0.0f;
-    private float mPingPongStrength = 2.0f;
-
-    private float mFractalBounding = 1 / 1.75f;
-
-    private CellularDistanceFunction mCellularDistanceFunction = CellularDistanceFunction.EuclideanSq;
-    private CellularReturnType mCellularReturnType = CellularReturnType.Distance;
-    private float mCellularJitterModifier = 1.0f;
-
-    private DomainWarpType mDomainWarpType = DomainWarpType.OpenSimplex2;
-    private TransformType3D mWarpTransformType3D = TransformType3D.DefaultOpenSimplex2;
-    private float mDomainWarpAmp = 1.0f;
+    private int mSeed;
+    private float mFrequency;
+    private NoiseType mNoiseType;
+    private RotationType3D mRotationType3D;
+    private TransformType3D mTransformType3D;
+    private FractalType mFractalType;
+    private int mOctaves;
+    private float mLacunarity;
+    private float mGain;
+    private float mWeightedStrength;
+    private float mPingPongStrength;
+    private float mFractalBounding;
+    private CellularDistanceFunction mCellularDistanceFunction;
+    private CellularReturnType mCellularReturnType;
+    private float mCellularJitterModifier;
+    private DomainWarpType mDomainWarpType;
+    private TransformType3D mWarpTransformType3D;
+    private float mDomainWarpAmp;
 
     /// <summary>
-    /// Create new FastNoise object with optional seed
+    /// Create new FastNoise object with certain seed. 
+    /// You MUST pass a seed to the constructor, so the code is initialized correctly
     /// </summary>
-    public FastNoiseLite(int seed = 1337)
+    public FastNoiseLite(int seed)
     {
+        
+        // Struct's global variables are set to zero when created, so it is needed to assign values to them in the constructor
+        mSeed = 1337;
+        mFrequency = 0.01f;
+        mNoiseType = NoiseType.OpenSimplex2;
+        mRotationType3D = RotationType3D.None;
+        mTransformType3D = TransformType3D.DefaultOpenSimplex2;
+        mFractalType = FractalType.None;
+        mOctaves = 3;
+        mLacunarity = 2.0f;
+        mGain = 0.5f;
+        mWeightedStrength = 0.0f;
+        mPingPongStrength = 2.0f;
+        mFractalBounding = 1 / 1.75f;
+        mCellularDistanceFunction = CellularDistanceFunction.EuclideanSq;
+        mCellularReturnType = CellularReturnType.Distance;
+        mCellularJitterModifier = 1.0f;
+        mDomainWarpType = DomainWarpType.OpenSimplex2;
+        mWarpTransformType3D = TransformType3D.DefaultOpenSimplex2;
+        mDomainWarpAmp = 1.0f;
+        
         SetSeed(seed);
+        
     }
-
     /// <summary>
     /// Sets seed used for all noise types
     /// </summary>
@@ -309,6 +332,7 @@ public class FastNoiseLite
     [MethodImpl(OPTIMISE)]
     public float GetNoise(FNLfloat x, FNLfloat y)
     {
+        //Debug.Log($"cellular return type:{(int)mCellularReturnType}");
         TransformNoiseCoordinate(ref x, ref y);
 
         switch (mFractalType)
@@ -713,9 +737,9 @@ public class FastNoiseLite
 
 
     // Generic noise gen
-
     private float GenNoiseSingle(int seed, FNLfloat x, FNLfloat y)
     {
+        
         switch (mNoiseType)
         {
             case NoiseType.OpenSimplex2:
@@ -1560,9 +1584,9 @@ public class FastNoiseLite
 
 
     // Cellular Noise
-
     private float SingleCellular(int seed, FNLfloat x, FNLfloat y)
     {
+        //Debug.Log("cellular");
         int xr = FastRound(x);
         int yr = FastRound(y);
 
@@ -1668,7 +1692,7 @@ public class FastNoiseLite
                 distance1 = FastSqrt(distance1);
             }
         }
-
+         
         switch (mCellularReturnType)
         {
             case CellularReturnType.CellValue:
