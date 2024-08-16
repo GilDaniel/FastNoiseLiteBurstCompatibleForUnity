@@ -64,7 +64,7 @@ public class FastNoiseLiteWithBurstUsageExample : MonoBehaviour
         Debug.Log($"Jobs+Burst time:{Stopwatch.ElapsedMilliseconds}ms");
 
 
-        /// Assigns the calculated data to the texture.It is assigned to a Rfloat texture, so it's not needed any type of conversion, saving performance 
+        /// Assigns the calculated data to the texture.It is assigned to a Rfloat texture, so it's not needed any type of conversion, saving compute time
         texture.SetPixelData<float>(noiseData,0,0);
         texture.Apply();
 
