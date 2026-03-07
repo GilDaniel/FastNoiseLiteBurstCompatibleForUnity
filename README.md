@@ -1,7 +1,9 @@
 [![discord](https://img.shields.io/discord/703636892901441577?style=flat-square&logo=discord "Discord")](https://discord.gg/SHVaVfV)
 [![npm](https://img.shields.io/npm/v/fastnoise-lite)](https://www.npmjs.com/package/fastnoise-lite)
 
-# FastNoise Lite
+# FastNoise Lite ( C# Burst Compatible)
+
+### Version of FastNoiseLite modified for Burst compatibility, look at the [example code](https://github.com/GilDaniel/FastNoiseLite-Burst-Compatible-For-Unity/blob/master/CSharp/FastNoiseLiteWithBurstUsageExample.cs) for learning how to use it.
 
 FastNoise Lite is an extremely portable open source noise generation library with a large selection of noise algorithms. This library focuses on high performance while avoiding platform/language specific features, allowing for easy ports to as many possible languages.
 
